@@ -1,0 +1,36 @@
+name: me_250_790
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  # Core Python
+  - python=3.10
+  
+  # Data Science Stack
+  - numpy
+  - pandas
+  - scikit-learn
+  - scipy
+  
+  # Visualization
+  - matplotlib
+  - seaborn
+  - altair
+  - vegafusion
+  - vl-convert-python
+  
+  # Jupyter
+  - jupyter
+  - notebook
+  - ipykernel
+  - ipywidgets
+  
+  # Utilities
+  - tqdm
+  - requests
+  
+  # Pip packages (not available in conda or better via pip)
+  - pip
+  - pip:
+    - python-dotenv
+    - kagglehub
