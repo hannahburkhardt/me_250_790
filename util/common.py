@@ -1,37 +1,23 @@
 import numpy as np
 import altair as alt
 import pandas as pd
-import os
-from pathlib import Path
-
+from google.colab import userdata
 from sklearn.metrics import confusion_matrix, roc_curve, auc, precision_recall_curve, average_precision_score
 
 pd.options.display.max_rows = 100
 pd.options.display.max_colwidth = 200
 pd.set_option("plotting.backend", "altair")
 
-# Load environment variables from .env file
 def load_submission_token():
     """
-    Load the SUBMISSION_TOKEN from .env file.
-    Returns None if not found or if python-dotenv is not installed.
+    Load the SUBMISSION_TOKEN
+    Returns None if not found.
     """
-    try:
-        from dotenv import load_dotenv
-        # Find .env file in the project root (go up from util/ to project root)
-        project_root = Path(__file__).parent.parent
-        env_path = project_root / '.env'
-        load_dotenv(env_path)
-        token = os.getenv('SUBMISSION_TOKEN')
-        if token and token != 'your_token_here':
-            return token
-        else:
-            print("⚠️  SUBMISSION_TOKEN not found or not set in .env file.")
-            print("    Please create a .env file with your token to submit assignments.")
-            print(f"    Expected location: {env_path}")
-            return None
-    except ImportError:
-        print("⚠️  python-dotenv not installed. Run: pip install python-dotenv")
+    token = userdata.get('SUBMISSION_TOKEN')
+    if token and token != 'your_token_here':
+        return token
+    else:
+        print("⚠️ No token found! Click the 🔑 Secret Manager icon and add SUBMISSION_TOKEN")
         return None
 
 # Automatically load token when the module is imported
