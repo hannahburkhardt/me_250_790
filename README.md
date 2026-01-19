@@ -21,7 +21,8 @@ Open VS Code's integrated terminal (Command Palette → Create New Terminal) and
 
 **Using Conda (Recommended for Data Science):**
 ```bash
-conda env create -f environment.yml -n me_250_790
+cd me_250_790
+conda env create -f environment.yml
 conda activate me_250_790
 pip install -e .
 ```

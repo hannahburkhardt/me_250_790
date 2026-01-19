@@ -1,1 +1,11 @@
 .DS_Store
+
+*.egg
+*.egg-info/
+dist/
+build/
+__pycache__/
+
+# IDE
+.idea/
+.vscode/
