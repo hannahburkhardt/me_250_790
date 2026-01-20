@@ -11,12 +11,14 @@ dependencies:
   - pandas
   - scikit-learn
   - scipy
+  - imbalanced-learn
   
   # Visualization
   - matplotlib
   - seaborn
   - altair
   - vegafusion
+  - pyarrow
   - vl-convert-python
   
   # Jupyter
