@@ -23,6 +23,7 @@ Open VS Code's integrated terminal (Command Palette → Create New Terminal) and
 ```bash
 cd me_250_790
 conda env create -f environment.yml
+conda init powershell # This line on windows only
 conda activate me_250_790
 pip install -e .
 ```
