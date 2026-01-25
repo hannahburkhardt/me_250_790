@@ -33,7 +33,7 @@ def load_submission_token() -> Optional[str]:
 
     project_root = Path(__file__).parent.parent
     env_path = project_root / ".env"
-    load_dotenv(env_path)
+    load_dotenv(env_path, override=True)
 
     token = os.getenv("SUBMISSION_TOKEN")
     if token and token != "your_token_here":
