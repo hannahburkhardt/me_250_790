@@ -105,9 +105,9 @@ def confusion_matrix_chart(y_true: Iterable, y_pred: Iterable) -> alt.Chart:
     ).properties(title="Confusion Matrix", width=100)
 
 def auroc_curve_chart(y_true: Iterable, y_score: Iterable) -> alt.Chart:
-    fpr, tpr, _ = roc_curve(y_true, y_score)
+    fpr, tpr, thresholds = roc_curve(y_true, y_score)
     roc_auc = auc(fpr, tpr)
-    roc_df = pd.DataFrame({"FPR": fpr, "TPR": tpr})
+    roc_df = pd.DataFrame({"FPR": fpr, "TPR": tpr, "Threshold": thresholds})
 
     reference = alt.Chart(pd.DataFrame({"FPR": [0, 1], "TPR": [0, 1]})).mark_line(strokeDash=[5, 5], color="gray").encode(
         x="FPR", y="TPR"
@@ -116,7 +116,7 @@ def auroc_curve_chart(y_true: Iterable, y_score: Iterable) -> alt.Chart:
     return (
         alt.Chart(roc_df)
         .mark_line()
-        .encode(x="FPR", y="TPR")
+        .encode(x="FPR", y="TPR", tooltip=["Threshold"])
         .properties(title=f"ROC Curve (AUC = {roc_auc:.2f})")
         + reference
     )
