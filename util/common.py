@@ -29,6 +29,11 @@ _current_module = 1
 
 
 def _get_current_module_name() -> str:
+    """Retrieve the title of the current module from the API.
+    
+    Returns:
+        str: The module title, or an error message if the title cannot be loaded.
+    """
     title = "<Unable to load title>"
     try:
         response = requests.get(
@@ -48,7 +53,14 @@ def _get_current_module_name() -> str:
 
 
 def set_module(module_num: int) -> None:
-    """Set the current module number for submission purposes."""
+    """Set the current module number for submission purposes. Note this is not enforced, but will print diagnostic information about the module title based on the token used for submission, so that users can verify they are submitting to the correct module.
+    
+    Args:
+        module_num: The module number to set as current.
+        
+    Displays:
+        A Markdown message confirming the module number and title.
+    """
     global _current_module
     _current_module = module_num
 
@@ -61,7 +73,14 @@ Please ensure that this is correct; if not, obtain a new token from the informat
 
 
 def load_submission_token() -> Optional[str]:
-    """Load SUBMISSION_TOKEN from .env; return None when unavailable."""
+    """Load SUBMISSION_TOKEN from .env file.
+    
+    Attempts to load the submission token from a .env file located in the project root.
+    Prints helpful error messages if the file or token is not found.
+    
+    Returns:
+        Optional[str]: The submission token if found and valid, None otherwise.
+    """
 
     try:
         from dotenv import load_dotenv
@@ -94,7 +113,15 @@ _submission_token = load_submission_token()
 
 
 def submit_answer(question_num: int, answer: Union[int, str]) -> None:
-    """Submit an answer to the course backend."""
+    """Submit an answer to the course backend.
+    
+    Args:
+        question_num: The question number to submit an answer for.
+        answer: The answer to submit (can be an integer or string).
+        
+    Prints:
+        Success/failure message and correctness feedback from the backend.
+    """
     global _current_module, _submission_token
 
     if _submission_token is None:
@@ -124,6 +151,17 @@ def submit_answer(question_num: int, answer: Union[int, str]) -> None:
 def value_counts_pct(
     self: pd.Series, raw: bool = False, *args, **kwargs
 ) -> pd.DataFrame:
+    """Generate value counts with both absolute counts and percentages.
+    
+    Args:
+        self: The pandas Series to count values from.
+        raw: If True, return raw numeric values; if False, format as strings.
+        *args: Additional arguments passed to value_counts.
+        **kwargs: Additional keyword arguments passed to value_counts.
+        
+    Returns:
+        pd.DataFrame: DataFrame with 'count' and 'percent' columns.
+    """
     counts = self.value_counts(*args, **kwargs).rename("count")
     percents = self.value_counts(normalize=True, *args, **kwargs).rename("percent")
     result = pd.concat([counts, percents], axis=1)
@@ -144,6 +182,16 @@ pd.core.groupby.SeriesGroupBy.value_counts_pct = value_counts_pct
 def value_counts_pct_all(
     self: pd.DataFrame, cols: Optional[Sequence[str]] = None, **kwargs
 ) -> pd.DataFrame:
+    """Generate value counts with percentages for multiple columns.
+    
+    Args:
+        self: The pandas DataFrame to analyze.
+        cols: Column names to analyze. If None, uses all object-type columns.
+        **kwargs: Additional keyword arguments passed to value_counts_pct.
+        
+    Returns:
+        pd.DataFrame: Multi-indexed DataFrame with counts and percentages for each column.
+    """
     selected = cols or [c for c in self.columns if self[c].dtype == "object"]
     return pd.concat(
         [self[c].value_counts_pct(**kwargs) for c in selected], keys=selected
@@ -154,6 +202,15 @@ pd.DataFrame.value_counts_pct_all = value_counts_pct_all
 
 
 def confusion_matrix_chart(y_true: Iterable, y_pred: Iterable) -> alt.Chart:
+    """Display a confusion matrix as an Altair chart.
+    
+    Args:
+        y_true: Actual/true labels.
+        y_pred: Predicted labels (binary).
+        
+    Returns:
+        alt.Chart: An Altair chart visualizing the confusion matrix.
+    """
     cm = confusion_matrix(y_true, y_pred)
     cm_df = (
         pd.DataFrame(cm, columns=["0", "1"], index=["0", "1"])
@@ -177,6 +234,15 @@ def confusion_matrix_chart(y_true: Iterable, y_pred: Iterable) -> alt.Chart:
 
 
 def auroc_curve_chart(y_true: Iterable, y_score: Iterable) -> alt.Chart:
+    """Generate an AUROC (Area Under ROC Curve) chart.
+    
+    Args:
+        y_true: Actual/true binary labels.
+        y_score: Predicted probability scores or decision function values.
+        
+    Returns:
+        alt.Chart: An Altair chart showing the ROC curve with AUC in the title.
+    """
     fpr, tpr, thresholds = roc_curve(y_true, y_score)
     roc_auc = auc(fpr, tpr)
     roc_df = pd.DataFrame({"FPR": fpr, "TPR": tpr, "Threshold": thresholds})
@@ -197,6 +263,15 @@ def auroc_curve_chart(y_true: Iterable, y_score: Iterable) -> alt.Chart:
 
 
 def auprc_curve_chart(y_true: Iterable, y_score: Iterable) -> alt.Chart:
+    """Generate an AUPRC (Area Under Precision-Recall Curve) chart.
+    
+    Args:
+        y_true: Actual/true binary labels.
+        y_score: Predicted probability scores or decision function values.
+        
+    Returns:
+        alt.Chart: An Altair chart showing the precision-recall curve with AUC in the title.
+    """
     precision, recall, thresholds = precision_recall_curve(y_true, y_score)
     pr_auc = average_precision_score(y_true, y_score)
     pr_df = pd.DataFrame({"Recall": recall, "Precision": precision, "Threshold": list(thresholds) + [np.nan]})
@@ -212,6 +287,15 @@ def auprc_curve_chart(y_true: Iterable, y_score: Iterable) -> alt.Chart:
 def mean_confidence_interval(
     data: Sequence[float], confidence: float = 0.95
 ) -> Tuple[float, float, float]:
+    """Calculate the mean and confidence interval of data.
+    
+    Args:
+        data: Sequence of numeric values.
+        confidence: Confidence level (default: 0.95 for 95% confidence interval).
+        
+    Returns:
+        Tuple[float, float, float]: A tuple of (mean, lower_bound, upper_bound).
+    """
     arr = np.asarray(data, dtype=float)
     m, se = float(np.mean(arr)), float(scipy.stats.sem(arr))
     h = se * float(scipy.stats.t.ppf((1 + confidence) / 2.0, len(arr) - 1))
@@ -221,5 +305,15 @@ def mean_confidence_interval(
 def classification_performance_metrics_table(
     y_true: Iterable, y_pred: Iterable
 ) -> pd.DataFrame:
+    """Generate a classification performance metrics table.
+    
+    Args:
+        y_true: Actual/true labels.
+        y_pred: Predicted labels (binary).
+        
+    Returns:
+        pd.DataFrame: DataFrame containing precision, recall, f1-score, and support 
+                     for each class.
+    """
     report_df = pd.DataFrame(classification_report(y_true, y_pred, output_dict=True)).T
     return report_df.iloc[[0, 1], :]
