@@ -192,9 +192,17 @@ def value_counts_pct_all(
     Returns:
         pd.DataFrame: Multi-indexed DataFrame with counts and percentages for each column.
     """
-    selected = cols or [c for c in self.columns if self[c].dtype == "object"]
+    selected = cols or [
+        c
+        for c in self.columns
+        if self[c].dtype in ["object", "category", "bool", "int"]
+    ]
+    if len(selected) == 0:
+        raise ValueError("No categorical columns found.")
     return pd.concat(
-        [self[c].value_counts_pct(**kwargs) for c in selected], keys=selected
+        [self[c].value_counts_pct(**kwargs) for c in selected],
+        keys=selected,
+        names=["Feature", "Value"],
     )
 
 
