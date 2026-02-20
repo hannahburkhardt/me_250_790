@@ -226,6 +226,17 @@ def confusion_matrix_chart(y_true: Iterable, y_pred: Iterable) -> alt.Chart:
         .melt(id_vars="index")
         .rename(columns={"index": "Actual", "variable": "Predicted"})
     )
+    
+    # Calculate metrics
+    tn, fp, fn, tp = cm.ravel()
+    accuracy = (tp + tn) / (tp + tn + fp + fn)
+    sensitivity = tp / (tp + fn) if (tp + fn) > 0 else 0
+    specificity = tn / (tn + fp) if (tn + fp) > 0 else 0
+    
+    title_text = [
+        "Confusion Matrix", 
+        f"Acc: {accuracy:.3f} | Sens: {sensitivity:.3f} | Spec: {specificity:.3f}"
+    ]
 
     base = alt.Chart(cm_df).encode(x="Predicted", y="Actual")
     return alt.layer(
@@ -238,7 +249,7 @@ def confusion_matrix_chart(y_true: Iterable, y_pred: Iterable) -> alt.Chart:
                 alt.value("black"),
             ),
         ),
-    ).properties(title="Confusion Matrix", width=100)
+    ).properties(title=title_text, width=100)
 
 
 def auroc_curve_chart(y_true: Iterable, y_score: Iterable) -> alt.Chart:

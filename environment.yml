@@ -12,6 +12,7 @@ dependencies:
   - scikit-learn
   - scipy
   - imbalanced-learn
+  - xgboost
   
   # Visualization
   - matplotlib
