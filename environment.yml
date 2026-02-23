@@ -13,7 +13,6 @@ dependencies:
   - scipy
   - imbalanced-learn
   - xgboost
-  - shap
   
   # Visualization
   - matplotlib

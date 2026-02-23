@@ -2,7 +2,7 @@ import json
 import os
 from pathlib import Path
 from typing import Iterable, Optional, Sequence, Tuple, Union
-from IPython.display import Markdown, display
+from IPython.display import Markdown, display, display_html
 
 import altair as alt
 import numpy as np
@@ -336,3 +336,13 @@ def classification_performance_metrics_table(
     """
     report_df = pd.DataFrame(classification_report(y_true, y_pred, output_dict=True)).T
     return report_df.iloc[[0, 1], :]
+
+
+def display_side_by_side(*dfs, titles=None):
+    """Display multiple DataFrames side by side in a Jupyter notebook."""
+    html_str = '<div style="display: flex; gap: 20px;">'
+    for i, df in enumerate(dfs):
+        title = titles[i] if titles else ''
+        html_str += f'<div><h4>{title}</h3>{df.to_html()}</div>'
+    html_str += '</div>'
+    display_html(html_str, raw=True)
